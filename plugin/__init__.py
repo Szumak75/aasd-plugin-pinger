@@ -1,0 +1,1 @@
+"""Worker template plugin package."""
