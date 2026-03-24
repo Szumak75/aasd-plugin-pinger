@@ -11,8 +11,8 @@ Purpose: Provide a starter `load.py` for standalone AASd worker plugins.
 from libs.plugins import PluginCommonKeys, PluginKind, PluginSpec
 from libs.templates import PluginConfigField, PluginConfigSchema
 
-from plugin.config import Keys
-from plugin.runtime import WorkerTemplateRuntime
+from .plugin.config import Keys
+from .plugin.runtime import WorkerTemplateRuntime
 
 
 def get_plugin_spec() -> PluginSpec:
@@ -31,8 +31,8 @@ def get_plugin_spec() -> PluginSpec:
             PluginConfigField(
                 name=PluginCommonKeys.MESSAGE_CHANNEL,
                 field_type=list,
-                default=[1],
-                required=True,
+                default=['1'],
+                required=False,
                 description="Dispatcher channel used for the startup message.",
             ),
             PluginConfigField(
@@ -47,7 +47,7 @@ def get_plugin_spec() -> PluginSpec:
                 field_type=list,
                 default=[],
                 required=True,
-                description="List of hosts to ping.",
+                description="List of IP hosts to ping.",
             ),
         ],
     )
