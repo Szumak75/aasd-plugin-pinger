@@ -171,6 +171,35 @@ class _FakePinger:
         return values.pop(0)
 
 
+class _InterruptingPinger:
+    """Set the stop flag during the first ICMP probe."""
+
+    # #[CONSTRUCTOR]##################################################################
+    def __init__(self, stop_event: Event) -> None:
+        """Store the stop event used by the runtime.
+
+        ### Arguments:
+        * stop_event: Event - Runtime stop event.
+        """
+        self.call_count = 0
+        self._stop_event = stop_event
+
+    # #[PUBLIC METHODS]################################################################
+    def is_alive(self, ip: str) -> bool:
+        """Interrupt the runtime after the first ICMP probe.
+
+        ### Arguments:
+        * ip: str - Monitored host address.
+
+        ### Returns:
+        bool - Always `False`.
+        """
+        del ip
+        self.call_count += 1
+        self._stop_event.set()
+        return False
+
+
 class TestPingerRuntime(unittest.TestCase):
     """Cover the standalone pinger runtime behavior."""
 
@@ -334,6 +363,42 @@ class TestPingerRuntime(unittest.TestCase):
                 "Host 192.0.2.3 is still down" in item
                 for item in logger.warning_messages
             )
+        )
+        context.dispatcher.publish.assert_not_called()
+
+    def test_05_should_stop_without_checking_remaining_hosts(self) -> None:
+        """Exit the loop promptly after the stop flag is set."""
+        context = self.__build_context("pinger_interrupt")
+        logger = _RecordingLogger()
+        context.logger = logger  # type: ignore[assignment]
+        context.dispatcher.publish = MagicMock()
+        context.debug = True
+        context.config = {
+            "at_channel": [],
+            "hosts": ["192.0.2.10", "192.0.2.11"],
+            "inform_on_alive": False,
+            "inform_on_down": True,
+            "inform_on_still_down": False,
+            "inform_on_up": False,
+            "message_channel": [],
+            "message_on_alive": "Host {host} is alive for {status_time}.",
+            "message_on_down": "Host {host} is down for {status_time}.",
+            "message_on_still_down": "Host {host} is still down for {status_time}.",
+            "message_on_up": "Host {host} is up for {status_time}.",
+            "ping_count": 3,
+            "ping_interval": 1,
+        }
+
+        runtime = _load_plugin_spec()().runtime_factory(context)
+        stop_event = Event()
+        runtime._stop_event = stop_event
+        runtime._pinger = _InterruptingPinger(stop_event=stop_event)  # type: ignore[assignment]
+
+        runtime.run()
+
+        self.assertEqual(runtime._pinger.call_count, 1)  # type: ignore[union-attr]
+        self.assertFalse(
+            any("192.0.2.11" in item for item in logger.debug_messages)
         )
         context.dispatcher.publish.assert_not_called()
 

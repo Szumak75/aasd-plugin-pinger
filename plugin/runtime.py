@@ -152,17 +152,23 @@ class WorkerTemplateRuntime(Thread, ThPluginMixin):
                     message="No hosts configured for monitoring.",
                 )
                 if context.verbose:
-                    context.logger.message_warning = "No hosts configured for monitoring."
+                    context.logger.message_warning = (
+                        "No hosts configured for monitoring."
+                    )
                 stop_event.wait(float(context.config[Keys.PING_INTERVAL]))
                 continue
             host_states = self.__current_host_states()
             any_down = False
             for host in hosts:
+                if stop_event.is_set():
+                    break
                 is_alive: bool = self.__check_host_alive(
                     host=host,
                     ping_count=int(context.config[Keys.PING_COUNT]),
                     pinger=pinger,
                 )
+                if stop_event.is_set():
+                    break
                 if not is_alive:
                     any_down = True
                 self.__process_host(
@@ -171,6 +177,8 @@ class WorkerTemplateRuntime(Thread, ThPluginMixin):
                     host_states=host_states,
                     is_alive=is_alive,
                 )
+            if stop_event.is_set():
+                break
             self.__update_health(
                 healthy=not any_down,
                 message=(
@@ -289,8 +297,11 @@ class WorkerTemplateRuntime(Thread, ThPluginMixin):
         ### Returns:
         bool - `True` when any ICMP attempt succeeds.
         """
+        stop_event: Optional[Event] = self._stop_event
         attempts = max(1, ping_count)
         for _ in range(attempts):
+            if stop_event is not None and stop_event.is_set():
+                return False
             if pinger.is_alive(host):
                 return True
         return False
@@ -372,7 +383,9 @@ class WorkerTemplateRuntime(Thread, ThPluginMixin):
         previous = host_states.get(host)
 
         if context.debug:
-            context.logger.message_debug = f"Host '{host}' alive={is_alive}"
+            context.logger.message_debug = (
+                f"Host '{host}' is alive" if is_alive else f"Host '{host}' is down"
+            )
 
         if previous is None:
             host_states[host] = _HostStatus(is_alive=is_alive, status_since=now)

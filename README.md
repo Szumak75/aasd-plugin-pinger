@@ -36,6 +36,11 @@ The template follows the current recommended pattern:
 - explicit narrowing of `Optional[...]` runtime properties
 - `PluginStateSnapshot` and `PluginHealthSnapshot` fallbacks for guard paths
 
+The current `pinger` runtime applies `ping_count` as the number of plugin-side
+retries per host. Each `Pinger.is_alive(...)` call performs one system-level
+ICMP attempt, which keeps retry behavior explicit and improves shutdown
+responsiveness.
+
 For broader project guidance, see:
 
 - `docs/PluginAPI.md`
