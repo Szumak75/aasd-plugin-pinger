@@ -158,7 +158,7 @@ class WorkerTemplateRuntime(Thread, ThPluginMixin):
             host_states = self.__current_host_states()
             any_down = False
             for host in hosts:
-                is_alive = self.__check_host_alive(
+                is_alive: bool = self.__check_host_alive(
                     host=host,
                     ping_count=int(context.config[Keys.PING_COUNT]),
                     pinger=pinger,

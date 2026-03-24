@@ -32,20 +32,10 @@ def get_plugin_spec() -> PluginSpec:
             PluginConfigField(
                 name=PluginCommonKeys.MESSAGE_CHANNEL,
                 field_type=list,
-                default=[],
+                default=[1],
                 required=True,
                 description=(
                     "Interval-based notification targets used for emitted "
-                    "reachability events."
-                ),
-            ),
-            PluginConfigField(
-                name=PluginCommonKeys.AT_CHANNEL,
-                field_type=list,
-                default=[],
-                required=False,
-                description=(
-                    "Cron-like notification targets used for emitted "
                     "reachability events."
                 ),
             ),
@@ -138,8 +128,6 @@ def get_plugin_spec() -> PluginSpec:
         description="Starter AASd worker pinger plugin.",
         plugin_version=__version__,
     )
-
-
 
 
 # #[EOF]#######################################################################
