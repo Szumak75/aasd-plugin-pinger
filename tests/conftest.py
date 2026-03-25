@@ -1,14 +1,15 @@
 """Test bootstrap helpers for the standalone pinger plugin repository."""
 
-from pathlib import Path
 import os
 import sys
+from pathlib import Path
+from typing import List
 
 
-def _candidate_paths() -> list[Path]:
+def _candidate_paths() -> List[Path]:
     """Return possible AASd host roots used for importing public APIs."""
     repo_root = Path(__file__).resolve().parents[1]
-    out: list[Path] = []
+    out: List[Path] = []
     env_root = os.environ.get("AASD_ROOT")
     if env_root:
         out.append(Path(env_root))

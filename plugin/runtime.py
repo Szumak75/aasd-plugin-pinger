@@ -230,11 +230,11 @@ class WorkerTemplateRuntime(Thread, ThPluginMixin):
             self._state = state
         return state
 
-    def stop(self, timeout: float | None = None) -> None:
+    def stop(self, timeout: Optional[float] = None) -> None:
         """Request plugin shutdown.
 
         ### Arguments:
-        * timeout: float | None - Optional join timeout.
+        * timeout: Optional[float] - Optional join timeout.
         """
         stop_event: Optional[Event] = self._stop_event
         if stop_event is None:

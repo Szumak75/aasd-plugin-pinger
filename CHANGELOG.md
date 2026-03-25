@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.2
+
+- style: aligned the local pinger plugin repository with the preferred
+  `Optional[...]`, `List[...]`, `Tuple[...]`, and `Dict[...]` typing style
+
 ## 0.0.1
 
 - fix: reduced shutdown latency by interrupting the runtime loop between hosts and configured retry attempts

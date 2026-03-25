@@ -14,6 +14,7 @@ from pathlib import Path
 from queue import Queue
 from threading import Event
 from types import ModuleType
+from typing import Dict, List, Optional, Tuple
 from unittest.mock import MagicMock
 
 from jsktoolbox.configtool import Config as ConfigTool
@@ -50,9 +51,9 @@ class _RecordingLogger:
     # #[CONSTRUCTOR]##################################################################
     def __init__(self) -> None:
         """Initialize empty log-message buffers."""
-        self.debug_messages: list[str] = []
-        self.info_messages: list[str] = []
-        self.warning_messages: list[str] = []
+        self.debug_messages: List[str] = []
+        self.info_messages: List[str] = []
+        self.warning_messages: List[str] = []
 
     # #[PUBLIC PROPERTIES]############################################################
     @property
@@ -125,11 +126,11 @@ class _SinglePassStopEvent(Event):
         Event.__init__(self)
 
     # #[PUBLIC METHODS]################################################################
-    def wait(self, timeout: float | None = None) -> bool:
+    def wait(self, timeout: Optional[float] = None) -> bool:
         """Set the stop flag after the current loop cycle.
 
         ### Arguments:
-        * timeout: float | None - Unused compatibility argument.
+        * timeout: Optional[float] - Unused compatibility argument.
 
         ### Returns:
         bool - Always `True`.
@@ -142,7 +143,7 @@ class _SinglePassStopEvent(Event):
 class _FakePinger:
     """Provide deterministic ICMP answers for plugin runtime tests."""
 
-    RESPONSES: dict[str, list[bool]] = {}
+    RESPONSES: Dict[str, List[bool]] = {}
 
     # #[CONSTRUCTOR]##################################################################
     def __init__(self, timeout: int = 1) -> None:
