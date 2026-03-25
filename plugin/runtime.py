@@ -160,6 +160,11 @@ class WorkerTemplateRuntime(Thread, ThPluginMixin):
             host_states = self.__current_host_states()
             any_down = False
             for host in hosts:
+                if not host:
+                    context.logger.message_warning = (
+                        "Empty host entry in configuration is ignored."
+                    )
+                    continue
                 if stop_event.is_set():
                     break
                 is_alive: bool = self.__check_host_alive(
