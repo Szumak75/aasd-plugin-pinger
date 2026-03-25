@@ -1,4 +1,4 @@
-# AASd Worker Plugin Pinger
+# AASd v2 Worker Plugin Pinger
 
 This directory provides a recommended starting point for a new AASd worker
 plugin repository.
