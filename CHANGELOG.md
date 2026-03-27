@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.3
+
+- fix: populate `Message.diagnostic_source` with the runtime class name for dispatcher diagnostics
+- docs: documented the dispatcher diagnostic source attached to emitted notifications
+- chore: bumped local plugin version to `0.0.3`
+
 ## 0.0.2
 
 - style: aligned the local pinger plugin repository with the preferred

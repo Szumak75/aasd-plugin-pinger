@@ -40,6 +40,9 @@ The current `pinger` runtime applies `ping_count` as the number of plugin-side
 retries per host. Each `Pinger.is_alive(...)` call performs one system-level
 ICMP attempt, which keeps retry behavior explicit and improves shutdown
 responsiveness.
+Emitted dispatcher messages also carry `Message.diagnostic_source` with the
+runtime class name so host-side dispatcher warnings can identify the producer
+when a target channel is not registered.
 
 For broader project guidance, see:
 
