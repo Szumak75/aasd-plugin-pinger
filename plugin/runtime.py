@@ -145,7 +145,7 @@ class WorkerTemplateRuntime(Thread, ThPluginMixin):
         )
         while not stop_event.is_set():
             due_channels: List[int] = notifications.due_channels()
-            hosts = [str(item) for item in list(context.config[Keys.HOSTS])]
+            hosts: List[str] = [str(item) for item in list(context.config[Keys.HOSTS])]
             if not hosts:
                 self.__update_health(
                     healthy=False,
@@ -157,7 +157,7 @@ class WorkerTemplateRuntime(Thread, ThPluginMixin):
                     )
                 stop_event.wait(float(context.config[Keys.PING_INTERVAL]))
                 continue
-            host_states = self.__current_host_states()
+            host_states: Dict[str, _HostStatus] = self.__current_host_states()
             any_down = False
             for host in hosts:
                 if not host:
@@ -303,7 +303,7 @@ class WorkerTemplateRuntime(Thread, ThPluginMixin):
         bool - `True` when any ICMP attempt succeeds.
         """
         stop_event: Optional[Event] = self._stop_event
-        attempts = max(1, ping_count)
+        attempts: int = max(1, ping_count)
         for _ in range(attempts):
             if stop_event is not None and stop_event.is_set():
                 return False
@@ -320,7 +320,7 @@ class WorkerTemplateRuntime(Thread, ThPluginMixin):
         context: Optional[PluginContext] = self._context
         if context is None:
             raise ValueError("Plugin context is not initialized.")
-        instance_name = context.instance_name
+        instance_name: str = context.instance_name
         if instance_name not in self._host_status_cache:
             self._host_status_cache[instance_name] = {}
         return self._host_status_cache[instance_name]
@@ -384,8 +384,8 @@ class WorkerTemplateRuntime(Thread, ThPluginMixin):
         context: Optional[PluginContext] = self._context
         if context is None:
             raise ValueError("Plugin context is not initialized.")
-        now = int(time())
-        previous = host_states.get(host)
+        now: int = int(time())
+        previous: Optional[_HostStatus] = host_states.get(host)
 
         if context.debug:
             context.logger.message_debug = (
